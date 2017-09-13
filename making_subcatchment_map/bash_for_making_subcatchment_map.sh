@@ -16,7 +16,7 @@ cp /projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05mi
 # - The table should be sorted based on the upper reservoir capacity (largest to smallest), upper reservoir name (A to Z) and power station ID (smallest to largest). In this case, largest reservoirs are prioritized with their nearby smaller reservoirs that are falling in the same cells are merged.   
  
 # convert the column file to pcraster maps
-col2map --progress --clone lddsound_05min.map -S -l -x 2 -y 1 -v 3 reservoir_pcraster_ids.txt reservoir_pcraster_ids.map
+col2map --progress --clone lddsound_05min.map -S -M -x 2 -y 1 -v 3 reservoir_pcraster_ids.txt reservoir_pcraster_ids.map
 pcrcalc reservoir_pcraster_ids.nom.map = "nominal(reservoir_pcraster_ids.map)"
 
 # making the subcatchment maps
