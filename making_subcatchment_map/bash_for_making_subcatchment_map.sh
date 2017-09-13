@@ -1,4 +1,6 @@
 
+set -x
+
 # go to the working directory
 cd /scratch-shared/edwinhs/data_for_will/
 
