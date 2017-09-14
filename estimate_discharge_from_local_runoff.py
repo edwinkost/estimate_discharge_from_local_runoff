@@ -5,6 +5,8 @@ import os
 import sys
 import shutil
 
+import pcraster as pcr
+
 from pcraster.framework import DynamicModel
 from pcraster.framework import DynamicFramework
 
