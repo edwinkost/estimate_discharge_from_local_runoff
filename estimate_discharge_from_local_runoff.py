@@ -149,11 +149,13 @@ def main():
     vos.initialize_logging(log_file_directory)
     
     # timeStep info: year, month, day, doy, hour, etc
-    currTimeStep = ModelTime() 
-    currTimeStep.getStartEndTimeSteps(configuration.globalOptions['startTime'],
-                                      configuration.globalOptions['endTime'])
+    start_date = "1958-01-01"
+    end_date   = "2005-12-31"
     
-    # Running the deterministic_runner (excluding DA scheme)
+    currTimeStep = ModelTime() 
+    currTimeStep.getStartEndTimeSteps(start_date, end_date)
+    
+    # Running the deterministic_runner
     logger.info('Starting the calculation.')
     deterministic_runner = DeterministicRunner(currTimeStep, output_folder)
     dynamic_framework = DynamicFramework(deterministic_runner,currTimeStep.nrOfTimeSteps)
