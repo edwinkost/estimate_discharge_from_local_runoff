@@ -51,7 +51,7 @@ class DeterministicRunner(DynamicModel):
         landmask_file_name      = None
         # - river network map and sub-catchment map
         ldd_file_name           = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05min.map"
-        sub_catchment_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/ subcatchments_of_reservoir_pcraster_ids.nom.bigger_than_zero.map"
+        sub_catchment_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/subcatchments_of_reservoir_pcraster_ids.nom.bigger_than_zero.map"
         # - cell area (unit: m2)
         cell_area_file_name     = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/cellsize05min.correct.map"
         
