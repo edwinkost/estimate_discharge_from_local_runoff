@@ -38,6 +38,10 @@ class DeterministicRunner(DynamicModel):
         self.internal_inflow_output_file = output_folder + "/internal_inflow.nc" 
         # - all will have unit m3/s
 
+        # preparing temporary directory
+        self.temporary_directory = output_folder + "/tmp/"
+        os.makedirs(self.temporary_directory)
+        
         # clone map
         logger.info("Set the clone map")
         self.clonemap_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/clone_version_20170824.map"
