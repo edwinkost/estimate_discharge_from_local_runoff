@@ -22,18 +22,30 @@ class DeterministicRunner(DynamicModel):
 
         self.modelTime = modelTime
         
+        # netcdf input files - based on PCR-GLOBWB output
+        self.totat_runoff_input_file = "/scratch-shared/edwinhs/runs_2017_july_aug_finalizing_4LCs/05min_runs/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/totalRunoff_monthTot_output_1958-01-31_to_2015-12-31.nc"
+        self.discharge_input_file    = "/scratch-shared/edwinhs/runs_2017_july_aug_finalizing_4LCs/05min_runs/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/discharge_monthAvg_output_1958-01-31_to_2015-12-31.nc"
+
+        # output files - in netcdf format
+        output_folder                    = 
+        self.total_inflow_output_file    = output_folder + 
+        self.internal_inflow_output_file = output_folder +  
+        # - all will have unit m3/s
+
+
         # clone map
         self.clonemap_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/clone_version_20170824.map"
         pcr.setclone(self.clonemap_file_name)
         
-        # input files
+        # pcraster input files
+        landmask_file_name      = None
         # - river network map and sub-catchment map
         ldd_file_name           = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05min.map"
         sub_catchment_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/ subcatchments_of_reservoir_pcraster_ids.nom.bigger_than_zero.map"
-        cell_area_file_name     = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/cellsize05min.correct.map"                 # unit: m2
-        landmask_file_name      = None
+        # - cell area (unit: m2)
+        cell_area_file_name     = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/cellsize05min.correct.map"
         
-        # loading input files
+        # loading pcraster input maps
         self.sub_catchment = vos.readPCRmapClone(sub_catchment_file_name, \
                                                  self.clonemap_file_name, \
                                                  self.temporary_directory, \
@@ -62,6 +74,29 @@ class DeterministicRunner(DynamicModel):
         self.ldd_network   = pcr.ifthen(self.landmask, self.ldd_network)
         self.cell_area     = pcr.ifthen(self.landmask, self.cell_area)
         
+        # preparing an object for reporting netcdf files:
+        self.output = OutputNetcdf(mapattr_dict = self.output_netcdf,\
+                                   cloneMapFileName = None,\
+                                   netcdf_format = self.output_netcdf['format'],\
+                                   netcdf_zlib = self.output_netcdf['zlib'],\
+                                   netcdf_attribute_dict = self.output_netcdf['netcdf_attribute'],\
+                                   netcdf_attribute_description = None)
+        
+        # preparing the netcdf file for total runoff
+        self.output.createNetCDF(self.output_netcdf['file_name'],\
+                                 self.output_netcdf['variable_name'],\
+                                 self.output_netcdf['variable_unit'])
+
+
+        # preparing a netcdf file for total runoff
+
+
+        # preparing a netcdf file for internal inflow 
+
+
+        # preparing a netcdf file for total runoff
+
+
     def initial(self): 
         pass
 
