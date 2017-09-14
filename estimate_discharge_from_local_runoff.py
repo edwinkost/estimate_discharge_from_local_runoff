@@ -11,6 +11,7 @@ from pcraster.framework import DynamicFramework
 from currTimeStep import ModelTime
 
 import ncConverter as netcdf_writer
+import virtualOS as vos
 
 #~ from pcrglobwb import PCRGlobWB
 
