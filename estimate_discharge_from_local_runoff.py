@@ -3,12 +3,14 @@
 #
 import os
 import sys
+import shutil
 
 from pcraster.framework import DynamicModel
 from pcraster.framework import DynamicFramework
 
 from currTimeStep import ModelTime
-from reporting import Reporting
+
+import ncConverter as netcdf_writer
 
 #~ from pcrglobwb import PCRGlobWB
 
@@ -17,23 +19,24 @@ logger = logging.getLogger(__name__)
 
 class DeterministicRunner(DynamicModel):
 
-    def __init__(self, modelTime):
+    def __init__(self, modelTime, output_folder = "."):
         DynamicModel.__init__(self)
 
         self.modelTime = modelTime
         
         # netcdf input files - based on PCR-GLOBWB output
+        # - total runoff (m/day)
         self.totat_runoff_input_file = "/scratch-shared/edwinhs/runs_2017_july_aug_finalizing_4LCs/05min_runs/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/totalRunoff_monthTot_output_1958-01-31_to_2015-12-31.nc"
+        # - discharge (m3/s)
         self.discharge_input_file    = "/scratch-shared/edwinhs/runs_2017_july_aug_finalizing_4LCs/05min_runs/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/discharge_monthAvg_output_1958-01-31_to_2015-12-31.nc"
 
         # output files - in netcdf format
-        output_folder                    = 
-        self.total_inflow_output_file    = output_folder + 
-        self.internal_inflow_output_file = output_folder +  
+        self.total_inflow_output_file    = output_folder + "/total_inflow.nc"
+        self.internal_inflow_output_file = output_folder + "/internal_inflow.nc" 
         # - all will have unit m3/s
 
-
         # clone map
+        logger.info("Set the clone map")
         self.clonemap_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/clone_version_20170824.map"
         pcr.setclone(self.clonemap_file_name)
         
@@ -75,27 +78,16 @@ class DeterministicRunner(DynamicModel):
         self.cell_area     = pcr.ifthen(self.landmask, self.cell_area)
         
         # preparing an object for reporting netcdf files:
-        self.output = OutputNetcdf(mapattr_dict = self.output_netcdf,\
-                                   cloneMapFileName = None,\
-                                   netcdf_format = self.output_netcdf['format'],\
-                                   netcdf_zlib = self.output_netcdf['zlib'],\
-                                   netcdf_attribute_dict = self.output_netcdf['netcdf_attribute'],\
-                                   netcdf_attribute_description = None)
+        self.netcdf_report = netcdf_writer.PCR2netCDF(self.clonemap_file_name)
         
-        # preparing the netcdf file for total runoff
-        self.output.createNetCDF(self.output_netcdf['file_name'],\
-                                 self.output_netcdf['variable_name'],\
-                                 self.output_netcdf['variable_unit'])
-
-
-        # preparing a netcdf file for total runoff
-
-
-        # preparing a netcdf file for internal inflow 
-
-
-        # preparing a netcdf file for total runoff
-
+        # preparing netcdf output files:
+        # - for total inflow
+        self.netcdf_report.createNetCDF(self.total_inflow_output_file,\
+                                        "total_inflow",\
+                                        "m3/s")
+        self.netcdf_report.createNetCDF(self.internal_inflow_output_file,\
+                                        "internal_inflow",\
+                                        "m3/s")
 
     def initial(self): 
         pass
@@ -106,20 +98,54 @@ class DeterministicRunner(DynamicModel):
         self.modelTime.update(self.currentTimeStep())
 
         # processing done only at the last day of the month
-        if /
-            # calculate total inflow and internal inflow values 
-            self.total_runoff    = 
-            self.total_inflow    = pcr.catchmenttotal(self.total_runoff, )
-            self.internal_inflow = pcr.areatotal()
-            # convert it 
-        
-            self.reporting.report()
+        if self.modelTime.isLastDayOfMonth():
+            
+            logger.info("Reading runoff for time %s", self.modelTime.currTime)
+            self.total_runoff = vos.netcdf2PCRobjClone(self.totat_runoff_input_file, "total_runoff",\
+                                                       str(self.modelTime.fulldate), 
+                                                       useDoy = None,
+                                                       cloneMapFileName = self.clonemap_file_name,\
+                                                       LatitudeLongitude = True)
+
+            logger.info("Calculating total inflow and internal inflow for time %s", self.modelTime.currTime)
+            self.total_inflow    = pcr.catchmenttotal(self.total_runoff * self.cell_area, self.ldd_network)
+            self.internal_inflow = pcr.areatotal(self.total_runoff  * self.cell_area, self.sub_catchment)
+            # - convert values from m3/day to m3/s
+            self.total_inflow    = pcr.catchmenttotal(self.total_runoff * self.cell_area, self.ldd_network)
+            self.internal_inflow = pcr.areatotal(self.total_runoff  * self.cell_area, self.sub_catchment)
+            
+            # reporting 
+            # - time stamp for reporting
+            timeStamp = datetime.datetime(self.modelTime.year,\
+                                          self.modelTime.month,\
+                                          self.modelTime.day,\
+                                          0)
+            logger.info("Reporting for time %s", self.modelTime.currTime)
+            self.netcdfObj.data2NetCDF(self.total_inflow_output_file, \
+                                       "total_inflow", \
+                                       pcr.pcr2numpy(self.total_inflow, vos.MV), \
+                                       timeStamp)
+            self.netcdfObj.data2NetCDF(self.internal_inflow_output_file, \
+                                       "internal_inflow", \
+                                       pcr.pcr2numpy(self.internal_inflow, vos.MV), \
+                                       timeStamp)
+
 
 def main():
 
-    # TODO: Define the logger
+    # the output folder from this calculation
+    output_folder = "/scratch-shared/edwinhs/data_for_will/netcdf_process/"
+    # - if exists, cleaning the previous output directory:
+    if os.path.isdir(output_folder): shutil.rmtree(output_folder)
+    # - making the output folder
+    os.makedirs(output_folder)
 
-    # TODO: Making output 
+    # logger
+    # - making a log directory
+    log_file_directory = output_folder + "/" + "log/"
+    os.makedirs(log_file_directory)
+    # - initialize logging
+    vos.initialize_logging(log_file_directory)
     
     # timeStep info: year, month, day, doy, hour, etc
     currTimeStep = ModelTime() 
@@ -128,7 +154,7 @@ def main():
     
     # Running the deterministic_runner (excluding DA scheme)
     logger.info('Starting the calculation.')
-    deterministic_runner = DeterministicRunner(configuration, currTimeStep)
+    deterministic_runner = DeterministicRunner(currTimeStep, output_folder)
     dynamic_framework = DynamicFramework(deterministic_runner,currTimeStep.nrOfTimeSteps)
     dynamic_framework.setQuiet(True)
     dynamic_framework.run()
