@@ -7,16 +7,13 @@ import sys
 from pcraster.framework import DynamicModel
 from pcraster.framework import DynamicFramework
 
-from configuration import Configuration
 from currTimeStep import ModelTime
 from reporting import Reporting
-from spinUp import SpinUp
 
 #~ from pcrglobwb import PCRGlobWB
 
 import logging
 logger = logging.getLogger(__name__)
-# TODO: Improve this logging
 
 class DeterministicRunner(DynamicModel):
 
@@ -25,16 +22,45 @@ class DeterministicRunner(DynamicModel):
 
         self.modelTime = modelTime
         
-        # clone and landmask maps
-        self.landmask_file_name = 
-        self.clonemap_file_name = self.landmask_file_name
+        # clone map
+        self.clonemap_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/clone_version_20170824.map"
         pcr.setclone(self.clonemap_file_name)
-        self.landmask = pcr.readmap(self.landmask_file_name)
         
         # input files
-        self.nc_file_of_pcrglobwb_water_bodies = 
+        # - river network map and sub-catchment map
+        ldd_file_name           = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05min.map"
+        sub_catchment_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/ subcatchments_of_reservoir_pcraster_ids.nom.bigger_than_zero.map"
+        cell_area_file_name     = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/cellsize05min.correct.map"                 # unit: m2
+        landmask_file_name      = None
         
-        #~ # a table files from Will: unique_id_used ; will_station_id ; grand_id_from_will ; lat_from_will ; lon_from_will ; year_from_will        
+        # loading input files
+        self.sub_catchment = vos.readPCRmapClone(sub_catchment_file_name, \
+                                                 self.clonemap_file_name, \
+                                                 self.temporary_directory, \
+                                                 None, False, None, \
+                                                 True)
+        self.ldd_network   = vos.readPCRmapClone(ldd_file_name, \
+                                                 self.clonemap_file_name, \
+                                                 self.temporary_directory, \
+                                                 None, \
+                                                 True)
+        self.ldd_network   = pcr.lddrepair(pcr.ldd(self.ldd_network))
+        self.ldd_network   = pcr.lddrepair(self.ldd_network)
+
+        # define the landmask
+        self.landmask = pcr.defined(self.ldd_network)
+        if landmask_file_name != None:
+            self.landmask  = vos.readPCRmapClone(landmask_file_name, \
+                                                 self.clonemap_file_name, \
+                                                 self.temporary_directory, \
+                                                 None)
+        self.landmask = pcr.ifthen(pcr.defined(self.ldd_network), self.landmask)
+        self.landmask = pcr.ifthen(self.landmask, self.landmask)
+        
+        # set/limit all input maps to the defined landmask
+        self.sub_catchment = pcr.ifthen(self.landmask, self.sub_catchment)
+        self.ldd_network   = pcr.ifthen(self.landmask, self.ldd_network)
+        self.cell_area     = pcr.ifthen(self.landmask, self.cell_area)
         
     def initial(self): 
         pass
@@ -44,28 +70,22 @@ class DeterministicRunner(DynamicModel):
         # re-calculate current model time using current pcraster timestep value
         self.modelTime.update(self.currentTimeStep())
 
-        # read power station locations - based on the table from Will
-        # - for the ones with GRAND ids:
-        #   * correct their locations based on our GRAND database and read our GRAND parameters
-        #   * for the 
-        # - make sub-catchment maps 
-        self.sub_catchment_ids = 
+        # processing done only at the last day of the month
+        if /
+            # calculate total inflow and internal inflow values 
+            self.total_runoff    = 
+            self.total_inflow    = pcr.catchmenttotal(self.total_runoff, )
+            self.internal_inflow = pcr.areatotal()
+            # convert it 
         
-        # calculate total inflow and internal inflow values 
-        self.total_runoff    = 
-        self.total_inflow    = pcr.areatotal()
-        self.internal_inflow = pcr.catchmenttotal()
-        
-        # do any needed reporting in netcdf files for this time step        
-        # - annual_resolution : unique_id_used ; will_station_id ; grand_id ; lat_from_will ; lon_from_will ; year_from_will ; year_from_pcrglobwb 
-        # - monthly resolution: unique_id_used ; total_inflow ; internal_inflow 
-        
-        self.reporting.report()
+            self.reporting.report()
 
 def main():
 
     # TODO: Define the logger
 
+    # TODO: Making output 
+    
     # timeStep info: year, month, day, doy, hour, etc
     currTimeStep = ModelTime() 
     currTimeStep.getStartEndTimeSteps(configuration.globalOptions['startTime'],
@@ -79,6 +99,4 @@ def main():
     dynamic_framework.run()
 
 if __name__ == '__main__':
-    # print disclaimer
-    disclaimer.print_disclaimer(with_logger = True)
     sys.exit(main())
