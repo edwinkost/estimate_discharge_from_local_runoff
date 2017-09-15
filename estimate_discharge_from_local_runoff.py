@@ -133,8 +133,7 @@ class DeterministicRunner(DynamicModel):
             
             logger.info("Extrapolating internal inflow for time %s", self.modelTime.currTime)
             # Purpose: To avoid missing value data while being extracted by cdo command
-            self.internal_inflow      = pcr.cover(self.internal_inflow, pcr.downstream(self.ldd_network, pcr.cover(self.internal_inflow, 0.0)) 
-            self.internal_inflow      = pcr.cover(self.internal_inflow, pcr.windowaverage(self.internal_inflow, 1.0)) 
+            self.internal_inflow      = pcr.cover(self.internal_inflow, pcr.windowaverage(self.internal_inflow, 0.25)) 
 
             # reporting 
             # - time stamp for reporting
