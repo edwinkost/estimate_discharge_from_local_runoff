@@ -39,6 +39,7 @@ class PCR2netCDF():
         
     def set_general_netcdf_attributes(self):
 
+        self.attributeDictionary = {}
         self.attributeDictionary['institution'] = 'Department of Physical Geography, Utrecht University'
         self.attributeDictionary['title'      ] = 'PCR-GLOBWB 2 output (not coupled to MODFLOW)'
         self.attributeDictionary['description'] = 'Post processing PCR-GLOBWB output by Edwin H. Sutanudjaja (E.H.Sutanudjaja@UU.NL) for Will Zappa.'
