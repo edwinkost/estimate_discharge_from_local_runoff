@@ -29,7 +29,7 @@ class DeterministicRunner(DynamicModel):
         self.modelTime = modelTime
         
         # netcdf input files - based on PCR-GLOBWB output
-        # - total runoff (m/day)
+        # - total runoff (m/month)
         self.totat_runoff_input_file = "/scratch-shared/edwinhs/runs_2017_july_aug_finalizing_4LCs/05min_runs/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/totalRunoff_monthTot_output_1958-01-31_to_2015-12-31.nc"
         # - discharge (m3/s)
         self.discharge_input_file    = "/scratch-shared/edwinhs/runs_2017_july_aug_finalizing_4LCs/05min_runs/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/discharge_monthAvg_output_1958-01-31_to_2015-12-31.nc"
@@ -118,13 +118,18 @@ class DeterministicRunner(DynamicModel):
                                                        useDoy = None,
                                                        cloneMapFileName = self.clonemap_file_name,\
                                                        LatitudeLongitude = True)
-
+            self.total_runoff = pcr.cover(self.total_runoff, 0.0)
+            
             logger.info("Calculating total inflow and internal inflow for time %s", self.modelTime.currTime)
             self.total_inflow    = pcr.catchmenttotal(self.total_runoff * self.cell_area, self.ldd_network)
             self.internal_inflow = pcr.areatotal(self.total_runoff  * self.cell_area, self.sub_catchment)
-            # - convert values from m3/day to m3/s
-            self.total_inflow    = pcr.catchmenttotal(self.total_runoff * self.cell_area, self.ldd_network)
-            self.internal_inflow = pcr.areatotal(self.total_runoff  * self.cell_area, self.sub_catchment)
+            # - convert values to m3/s
+            number_of_days_in_a_month = self.modelTime.day
+            self.total_inflow         = self.total_inflow    / (number_of_days_in_a_month * 24. * 3600.)
+            self.internal_inflow      = self.internal_inflow / (number_of_days_in_a_month * 24. * 3600.)
+            # - limit the values to the landmask only
+            self.total_inflow         = pcr.ifthen(self.landmask, self.total_inflow)
+            self.internal_inflow      = pcr.ifthen(self.landmask, self.internal_inflow)
             
             # reporting 
             # - time stamp for reporting
