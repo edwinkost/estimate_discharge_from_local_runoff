@@ -170,7 +170,7 @@ def main():
     
     # timeStep info: year, month, day, doy, hour, etc
     start_date = "1958-01-01"
-    end_date   = "2005-12-31"
+    end_date   = "2015-12-31"
     
     currTimeStep = ModelTime() 
     currTimeStep.getStartEndTimeSteps(start_date, end_date)
