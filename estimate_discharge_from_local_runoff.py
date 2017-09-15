@@ -170,7 +170,7 @@ def main():
     vos.initialize_logging(log_file_directory)
     
     # timeStep info: year, month, day, doy, hour, etc
-    start_date = "1979-01-01"
+    start_date = "1958-01-01"
     end_date   = "2015-12-31"
     
     currTimeStep = ModelTime() 
