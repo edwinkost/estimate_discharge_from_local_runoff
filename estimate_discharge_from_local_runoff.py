@@ -68,6 +68,10 @@ class DeterministicRunner(DynamicModel):
                                                  True)
         self.ldd_network   = pcr.lddrepair(pcr.ldd(self.ldd_network))
         self.ldd_network   = pcr.lddrepair(self.ldd_network)
+        self.cell_area     = vos.readPCRmapClone(cell_area_file_name, \
+                                                 self.clonemap_file_name, \
+                                                 self.temporary_directory, \
+                                                 None)
 
         # define the landmask
         self.landmask = pcr.defined(self.ldd_network)
