@@ -133,14 +133,14 @@ class DeterministicRunner(DynamicModel):
                                           self.modelTime.day,\
                                           0)
             logger.info("Reporting for time %s", self.modelTime.currTime)
-            self.netcdfObj.data2NetCDF(self.total_inflow_output_file, \
-                                       "total_inflow", \
-                                       pcr.pcr2numpy(self.total_inflow, vos.MV), \
-                                       timeStamp)
-            self.netcdfObj.data2NetCDF(self.internal_inflow_output_file, \
-                                       "internal_inflow", \
-                                       pcr.pcr2numpy(self.internal_inflow, vos.MV), \
-                                       timeStamp)
+            self.netcdf_report.data2NetCDF(self.total_inflow_output_file, \
+                                           "total_inflow", \
+                                           pcr.pcr2numpy(self.total_inflow, vos.MV), \
+                                           timeStamp)
+            self.netcdf_report.data2NetCDF(self.internal_inflow_output_file, \
+                                           "internal_inflow", \
+                                           pcr.pcr2numpy(self.internal_inflow, vos.MV), \
+                                           timeStamp)
 
 
 def main():
