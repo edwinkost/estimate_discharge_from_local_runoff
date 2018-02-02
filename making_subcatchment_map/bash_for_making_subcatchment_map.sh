@@ -10,13 +10,13 @@ rm *.map
 # copy ldd map as the reference/clone map
 cp /projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05min.map .
 
-# manually - prepare a column file of "reservoir_pcraster_ids.txt"
+# manually - prepare a column file of "station_pcraster_ids.txt"
 # - Based on Will's excel table (see e.g. the sheet "GeneratorsUpdate_Edwin20170824" of https://github.com/edwinkost/estimate_discharge_from_local_runoff/blob/master/data/table_from_will.xlsx). 
 # - The column file contains the coordinates (lat/lon) of reservoir outlets. 
 # - The table should be sorted based on the upper reservoir capacity (largest to smallest), upper reservoir name (A to Z) and power station ID (smallest to largest). In this case, largest reservoirs are prioritized with their nearby smaller reservoirs that are falling in the same cells are merged.   
  
 # convert the column file to pcraster maps
-col2map --progress --clone lddsound_05min.map -S -M -x 2 -y 1 -v 3 reservoir_pcraster_ids.txt reservoir_pcraster_ids.map
+col2map --progress --clone lddsound_05min.map -S -M -x 2 -y 1 -v 3 station_pcraster_ids.txt reservoir_pcraster_ids.map
 pcrcalc reservoir_pcraster_ids.nom.map = "nominal(reservoir_pcraster_ids.map)"
 
 # making the subcatchment maps
