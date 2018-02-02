@@ -39,3 +39,7 @@ mapattr -p xmin.map ymin.map xmax.map ymax.map > corner_coordinates.txt
 geany corner_coordinates.txt &
 mapattr clone_version_20170824.map
 gdalinfo clone_version_20170824.map
+
+
+
+
