@@ -11,7 +11,7 @@ rm *.map
 cp /projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05min.map .
 
 # manually - prepare a column file of "station_pcraster_ids.txt"
-# - Based on Will's excel table (see e.g. the sheet "GeneratorsUpdate_Edwin20170824" of https://github.com/edwinkost/estimate_discharge_from_local_runoff/blob/master/data/table_from_will.xlsx). 
+# - Based on Will's excel table (see e.g. the sheet "GeneratorsUpdate_Edwin20180202" of https://github.com/edwinkost/estimate_discharge_from_local_runoff/blob/master/data/table_from_will.xlsx). 
 # - The column file contains the power station (lat/lon) coordinates based on PCR-GLOBWB river network.   
 # - The table should be sorted based on the hydro power capacities. In this case, largest power stations are prioritized with their nearby smaller ones falling in the same cells are merged.   
  
@@ -28,7 +28,7 @@ pcrcalc subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map = "if(sca
 pcrcalc downstreams_of_subcatchments_of_station_pcraster_ids.nom.map = "if(defined(station_pcraster_ids.nom.map), downstream(lddsound_05min.map, subcatchments_of_station_pcraster_ids.nom.map))"
 
 # make a table/column file listing stations and their downstream ones
-map2col station_pcraster_ids.nom.map downstreams_of_subcatchments_of_station_pcraster_ids.nom.map stations_and_their_downstreams_version_20170824.txt
+map2col station_pcraster_ids.nom.map downstreams_of_subcatchments_of_station_pcraster_ids.nom.map stations_and_their_downstreams_version_20180202.txt
 
 # manually - prepare a clone map (in order to reduce sizes of output netcdf files)
 pcrcalc xmin.map = "mapminimum(xcoordinate(defined(subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
@@ -38,8 +38,8 @@ pcrcalc ymax.map = "mapmaximum(ycoordinate(defined(subcatchments_of_station_pcra
 mapattr -p xmin.map ymin.map xmax.map ymax.map
 mapattr -p xmin.map ymin.map xmax.map ymax.map > corner_coordinates.txt
 geany corner_coordinates.txt &
-mapattr clone_version_20170824.map
-gdalinfo clone_version_20170824.map
+mapattr clone_version_20180202.map
+gdalinfo clone_version_20180202.map
 
 
 

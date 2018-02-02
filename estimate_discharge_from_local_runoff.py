@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class DeterministicRunner(DynamicModel):
 
-    def __init__(self, modelTime, output_folder = "."):
+    def __init__(self, modelTime, output_folder, totat_runoff_input_file):
         DynamicModel.__init__(self)
 
         self.modelTime = modelTime
@@ -31,8 +31,10 @@ class DeterministicRunner(DynamicModel):
         # netcdf input files - based on PCR-GLOBWB output
         # - total runoff (m/month)
         self.totat_runoff_input_file = "/scratch-shared/edwin/05min_runs_for_gmd_paper_30_oct_2017/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/totalRunoff_monthTot_output_1958-01-31_to_2015-12-31.nc"
-        # - discharge (m3/s)
-        self.discharge_input_file    = "/scratch-shared/edwin/05min_runs_for_gmd_paper_30_oct_2017/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/discharge_monthAvg_output_1958-01-31_to_2015-12-31.nc"
+        self.totat_runoff_input_file = totat_runoff_input_file
+        #
+        #~ # - discharge (m3/s) - NOT USED anymore
+        #~ self.discharge_input_file    = "/scratch-shared/edwin/05min_runs_for_gmd_paper_30_oct_2017/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/discharge_monthAvg_output_1958-01-31_to_2015-12-31.nc"
 
         # output files - in netcdf format
         self.total_inflow_output_file    = output_folder + "/total_inflow.nc"
@@ -45,14 +47,14 @@ class DeterministicRunner(DynamicModel):
         
         # clone map
         logger.info("Set the clone map")
-        self.clonemap_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/clone_version_20170824.map"
+        self.clonemap_file_name = "/scratch-shared/edwinvua/data_for_diede/subcatchment_map/clone_version_20180202.map"
         pcr.setclone(self.clonemap_file_name)
         
         # pcraster input files
         landmask_file_name      = None
         # - river network map and sub-catchment map
         ldd_file_name           = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05min.map"
-        sub_catchment_file_name = "/scratch-shared/edwinhs/data_for_will/subcatchment_maps/subcatchments_of_reservoir_pcraster_ids.nom.bigger_than_zero.map"
+        sub_catchment_file_name = "/scratch-shared/edwinvua/data_for_diede/subcatchment_map/subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map"
         # - cell area (unit: m2)
         cell_area_file_name     = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/cellsize05min.correct.map"
         
@@ -155,8 +157,16 @@ class DeterministicRunner(DynamicModel):
 
 def main():
 
+    # totat_runoff_input_file
+    totat_runoff_input_file = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/climatology_average_totalRunoff_monthTot_output_1979-2015.nc"
+    
+    # timeStep info: year, month, day, doy, hour, etc
+    start_date = "2015-01-01"
+    end_date   = "2015-12-31"
+
     # the output folder from this calculation
-    output_folder = "/scratch-shared/edwinhs/data_for_will/netcdf_process/"
+    output_folder = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/netcdf_process/climatology_average/"
+    
     # - if exists, cleaning the previous output directory:
     if os.path.isdir(output_folder): shutil.rmtree(output_folder)
     # - making the output folder
@@ -169,16 +179,12 @@ def main():
     # - initialize logging
     vos.initialize_logging(log_file_directory)
     
-    # timeStep info: year, month, day, doy, hour, etc
-    start_date = "1958-01-01"
-    end_date   = "2015-12-31"
-    
     currTimeStep = ModelTime() 
     currTimeStep.getStartEndTimeSteps(start_date, end_date)
     
     # Running the deterministic_runner
     logger.info('Starting the calculation.')
-    deterministic_runner = DeterministicRunner(currTimeStep, output_folder)
+    deterministic_runner = DeterministicRunner(currTimeStep, output_folder, )
     dynamic_framework = DynamicFramework(deterministic_runner,currTimeStep.nrOfTimeSteps)
     dynamic_framework.setQuiet(True)
     dynamic_framework.run()
