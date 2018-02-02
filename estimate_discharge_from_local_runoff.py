@@ -157,15 +157,17 @@ class DeterministicRunner(DynamicModel):
 
 def main():
 
+    # the output folder from this calculation
+    output_folder = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/netcdf_process/climatology_average/"
+
     # totat_runoff_input_file
     totat_runoff_input_file = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/climatology_average_totalRunoff_monthTot_output_1979-2015.nc"
     
     # timeStep info: year, month, day, doy, hour, etc
     start_date = "2015-01-01"
     end_date   = "2015-12-31"
-
-    # the output folder from this calculation
-    output_folder = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/netcdf_process/climatology_average/"
+    currTimeStep = ModelTime() 
+    currTimeStep.getStartEndTimeSteps(start_date, end_date)
     
     # - if exists, cleaning the previous output directory:
     if os.path.isdir(output_folder): shutil.rmtree(output_folder)
@@ -179,12 +181,10 @@ def main():
     # - initialize logging
     vos.initialize_logging(log_file_directory)
     
-    currTimeStep = ModelTime() 
-    currTimeStep.getStartEndTimeSteps(start_date, end_date)
     
     # Running the deterministic_runner
     logger.info('Starting the calculation.')
-    deterministic_runner = DeterministicRunner(currTimeStep, output_folder, )
+    deterministic_runner = DeterministicRunner(currTimeStep, output_folder, totat_runoff_input_file)
     dynamic_framework = DynamicFramework(deterministic_runner,currTimeStep.nrOfTimeSteps)
     dynamic_framework.setQuiet(True)
     dynamic_framework.run()
