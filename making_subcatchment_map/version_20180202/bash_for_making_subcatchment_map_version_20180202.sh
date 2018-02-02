@@ -16,7 +16,7 @@ cp /projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05mi
 # - The table should be sorted based on the hydro power capacities. In this case, largest power stations are prioritized with their nearby smaller ones falling in the same cells are merged.   
  
 # convert the column file to pcraster maps
-col2map --progress --clone lddsound_05min.map -S -M -x 2 -y 1 -v 3 github/edwinkost/estimate_discharge_from_local_runoff/making_subcatchment_map/version_20180202/station_pcraster_ids.txt station_pcraster_ids.map
+col2map --progress --clone lddsound_05min.map -S -M -x 2 -y 1 -v 3 ~/github/edwinkost/estimate_discharge_from_local_runoff/making_subcatchment_map/version_20180202/station_pcraster_ids.txt station_pcraster_ids.map
 pcrcalc station_pcraster_ids.nom.map = "nominal(station_pcraster_ids.map)"
 aguila station_pcraster_ids.nom.map
 
