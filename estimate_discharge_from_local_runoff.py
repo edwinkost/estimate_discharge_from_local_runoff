@@ -158,7 +158,7 @@ class DeterministicRunner(DynamicModel):
 def main():
 
     # the output folder from this calculation
-    output_folder = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/netcdf_process/climatology_average/"
+    output_folder = "/scratch-shared/edwinvua/data_for_diede/netcdf_process/climatology_average/"
 
     # totat_runoff_input_file
     totat_runoff_input_file = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/climatology_average_totalRunoff_monthTot_output_1979-2015.nc"
