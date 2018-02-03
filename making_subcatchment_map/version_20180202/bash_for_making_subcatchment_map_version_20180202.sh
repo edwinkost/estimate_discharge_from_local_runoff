@@ -1,8 +1,8 @@
 
 set -x
 
-# go to the working directory
-cd /scratch-shared/edwinvua/data_for_diede/subcatchment_map
+#~ # go to the working directory
+#~ cd /scratch-shared/edwinvua/data_for_diede/subcatchment_map
 
 # clean existing pcraster maps
 rm *.map
@@ -13,10 +13,10 @@ cp /projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05mi
 # manually - prepare a column file of "station_pcraster_ids.txt"
 # - Based on Will's excel table (see e.g. the sheet "GeneratorsUpdate_Edwin20180202" of https://github.com/edwinkost/estimate_discharge_from_local_runoff/blob/master/data/table_from_will.xlsx). 
 # - The column file contains the power station (lat/lon) coordinates based on PCR-GLOBWB river network.   
-# - The table should be sorted based on the hydro power capacities. In this case, largest power stations are prioritized with their nearby smaller ones falling in the same cells are merged.   
+# - The table should be sorted, e.g. based on hydro power capacities. In this case, largest power stations are prioritized with their nearby smaller ones falling in the same (5 arcmin) cells are merged.   
  
 # convert the column file to pcraster maps
-col2map --progress --clone lddsound_05min.map -S -M -x 2 -y 1 -v 3 ~/github/edwinkost/estimate_discharge_from_local_runoff/making_subcatchment_map/version_20180202/station_pcraster_ids.txt station_pcraster_ids.map
+col2map --progress --clone lddsound_05min.map -S -M -x 3 -y 2 -v 1 station_pcraster_ids.txt station_pcraster_ids.map
 pcrcalc station_pcraster_ids.nom.map = "nominal(station_pcraster_ids.map)"
 aguila station_pcraster_ids.nom.map
 
