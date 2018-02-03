@@ -1,0 +1,5 @@
+1. First, process the excel table provided by Will/Diede, see e.g. /home/sutanudjaja/github/edwinkost/estimate_discharge_from_local_runoff/data/xls_tables_from_will_etc/version_2018-02-02/HydroDatabase_v22Diede_EdwinProcessing.xlsx
+2. Making the sub-catchment map based on the processed excel table, see e.g. /home/sutanudjaja/github/edwinkost/estimate_discharge_from_local_runoff/making_subcatchment_map/version_20180202/bash_for_making_subcatchment_map_version_20180202.sh
+3. Generate runoff scenarios (e.g. climatology average, percentile 20th, etc.), see e.g. /home/sutanudjaja/github/edwinkost/estimate_discharge_from_local_runoff/cdo_for_runoff_scenarios/generate_runoff_scenarios.sh
+4. Run the python script to get the total flow and internal flow for every scenario, see e.g. 
+
