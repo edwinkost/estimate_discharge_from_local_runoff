@@ -30,18 +30,31 @@ pcrcalc downstreams_of_subcatchments_of_station_pcraster_ids.nom.map = "if(defin
 # make a table/column file listing stations and their downstream ones
 map2col station_pcraster_ids.nom.map downstreams_of_subcatchments_of_station_pcraster_ids.nom.map stations_and_their_downstreams_version_20180202.txt
 
-# making the 'path" map from the subcatchment map
 
-#~ # manually - prepare a clone map (in order to reduce sizes of output netcdf files)
-#~ pcrcalc xmin.map = "mapminimum(xcoordinate(defined(subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
-#~ pcrcalc xmax.map = "mapmaximum(xcoordinate(defined(subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
-#~ pcrcalc ymin.map = "mapminimum(ycoordinate(defined(subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
-#~ pcrcalc ymax.map = "mapmaximum(ycoordinate(defined(subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
-#~ mapattr -p xmin.map ymin.map xmax.map ymax.map
-#~ mapattr -p xmin.map ymin.map xmax.map ymax.map > corner_coordinates.txt
-#~ geany corner_coordinates.txt &
-#~ mapattr clone_version_20180202.map
-#~ gdalinfo clone_version_20180202.map
+
+# making clone maps
+#########################################
+
+
+# making the 'path" and catcment maps from the subcatchment map
+pcrcalc path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map = "path(lddsound_05min.map, defined(subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map))"
+pcrcalc catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map = "catchment(lddsound_05min.map, path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)"
+pcrcalc catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map = "if(catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map, catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)"
+# - extend until 1 arc degree
+pcrcalc catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map = "cover(catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map, boolean(windowmaximum(scalar(catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map), 1.0)))"
+aguila catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map
+
+
+# manually - prepare a clone map (in order to reduce sizes of output netcdf files)
+pcrcalc xmin.map = "mapminimum(xcoordinate(defined(catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
+pcrcalc xmax.map = "mapmaximum(xcoordinate(defined(catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
+pcrcalc ymin.map = "mapminimum(ycoordinate(defined(catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
+pcrcalc ymax.map = "mapmaximum(ycoordinate(defined(catchment_path_subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map)))"
+mapattr -p xmin.map ymin.map xmax.map ymax.map
+mapattr -p xmin.map ymin.map xmax.map ymax.map > corner_coordinates.txt
+geany corner_coordinates.txt &
+mapattr clone_version_20180202.map
+gdalinfo clone_version_20180202.map
 
 
 
