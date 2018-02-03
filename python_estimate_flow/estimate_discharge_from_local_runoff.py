@@ -47,14 +47,14 @@ class DeterministicRunner(DynamicModel):
         
         # clone map
         logger.info("Set the clone map")
-        self.clonemap_file_name = "/scratch-shared/edwinvua/data_for_diede/subcatchment_map/clone_version_20180202.map"
+        self.clonemap_file_name = "/home/edwinvua/github/edwinkost/estimate_discharge_from_local_runoff/making_subcatchment_map/version_20180202/clone_version_20180202.map"
         pcr.setclone(self.clonemap_file_name)
         
         # pcraster input files
         landmask_file_name      = None
         # - river network map and sub-catchment map
         ldd_file_name           = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/lddsound_05min.map"
-        sub_catchment_file_name = "/scratch-shared/edwinvua/data_for_diede/subcatchment_map/subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map"
+        sub_catchment_file_name = "/home/edwinvua/github/edwinkost/estimate_discharge_from_local_runoff/making_subcatchment_map/version_20180202/subcatchments_of_station_pcraster_ids.nom.bigger_than_zero.map"
         # - cell area (unit: m2)
         cell_area_file_name     = "/projects/0/dfguu/data/hydroworld/PCRGLOBWB20/input5min/routing/cellsize05min.correct.map"
         
