@@ -32,7 +32,10 @@ wait
 # calculate climatology percentile 20 1979-2015
 cdo -L -ymonpctl,20 totalRunoff_monthTot_output_1979-2015.nc climatology_minimum_totalRunoff_monthTot_output_1979-2015.nc climatology_maximum_totalRunoff_monthTot_output_1979-2015.nc climatology_percentile20_totalRunoff_monthTot_output_1979-2015.nc &
 
-# calculate climatology percentile 20 1979-2015
+# calculate climatology percentile 50 1979-2015 (median)
+cdo -L -ymonpctl,50 totalRunoff_monthTot_output_1979-2015.nc climatology_minimum_totalRunoff_monthTot_output_1979-2015.nc climatology_maximum_totalRunoff_monthTot_output_1979-2015.nc climatology_percentile50_totalRunoff_monthTot_output_1979-2015.nc &
+
+# calculate climatology percentile 80 1979-2015
 cdo -L -ymonpctl,80 totalRunoff_monthTot_output_1979-2015.nc climatology_minimum_totalRunoff_monthTot_output_1979-2015.nc climatology_maximum_totalRunoff_monthTot_output_1979-2015.nc climatology_percentile80_totalRunoff_monthTot_output_1979-2015.nc &
 
 wait
