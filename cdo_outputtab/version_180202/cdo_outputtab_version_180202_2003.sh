@@ -9,6 +9,7 @@ cd /scratch-shared/edwinvua/data_for_diede/
 
 # preparing table directories
 mkdir table
+mkdir table/2003
 mkdir table/2003/total_flow/
 mkdir table/2003/internal_flow/
 

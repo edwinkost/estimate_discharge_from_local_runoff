@@ -9,6 +9,7 @@ cd /scratch-shared/edwinvua/data_for_diede/
 
 # preparing table directories
 mkdir table
+mkdir table/climatology_average
 mkdir table/climatology_average/total_flow/
 mkdir table/climatology_average/internal_flow/
 
