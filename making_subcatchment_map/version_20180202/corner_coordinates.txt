@@ -1,0 +1,24 @@
+attributes  xmin.map    ymin.map    xmax.map    ymax.map   
+rows        2160        2160        2160        2160       
+columns     4320        4320        4320        4320       
+cell_length 0.0833333   0.0833333   0.0833333   0.0833333  
+data_type   scalar      scalar      scalar      scalar     
+cell_repr   single      single      single      single     
+projection  yb2t        yb2t        yb2t        yb2t       
+angle(deg)  0           0           0           0          
+xUL         -180        -180        -180        -180       
+yUL         90          90          90          90         
+min_val     -9.375      36.125      32.7917     68.7083    
+max_val     -9.375      36.125      32.7917     68.7083    
+version     2           2           2           2          
+file_id     0           0           0           0          
+native      y           y           y           y          
+attr_tab    n           n           n           n          
+
+xmin: -10
+xmax: 35
+ncols: 540
+
+ymin: 35
+ymax: 70
+nrows: 420
