@@ -37,8 +37,8 @@ class DeterministicRunner(DynamicModel):
         #~ self.discharge_input_file    = "/scratch-shared/edwin/05min_runs_for_gmd_paper_30_oct_2017/05min_runs_4LCs_accutraveltime_cru-forcing_1958-2015/non-natural_starting_from_1958/merged_1958_to_2015/discharge_monthAvg_output_1958-01-31_to_2015-12-31.nc"
 
         # output files - in netcdf format
-        self.total_inflow_output_file    = output_folder + "/total_inflow.nc"
-        self.internal_inflow_output_file = output_folder + "/internal_inflow.nc" 
+        self.total_flow_output_file    = output_folder + "/total_flow.nc"
+        self.internal_flow_output_file = output_folder + "/internal_flow.nc" 
         # - all will have unit m3/s
 
         # preparing temporary directory
@@ -96,11 +96,11 @@ class DeterministicRunner(DynamicModel):
         
         # preparing netcdf output files:
         # - for total inflow
-        self.netcdf_report.createNetCDF(self.total_inflow_output_file,\
-                                        "total_inflow",\
+        self.netcdf_report.createNetCDF(self.total_flow_output_file,\
+                                        "total_flow",\
                                         "m3/s")
-        self.netcdf_report.createNetCDF(self.internal_inflow_output_file,\
-                                        "internal_inflow",\
+        self.netcdf_report.createNetCDF(self.internal_flow_output_file,\
+                                        "internal_flow",\
                                         "m3/s")
 
     def initial(self): 
@@ -123,20 +123,20 @@ class DeterministicRunner(DynamicModel):
             self.total_runoff = pcr.cover(self.total_runoff, 0.0)
             
             logger.info("Calculating total inflow and internal inflow for time %s", self.modelTime.currTime)
-            self.total_inflow    = pcr.catchmenttotal(self.total_runoff * self.cell_area, self.ldd_network)
-            self.internal_inflow = pcr.areatotal(self.total_runoff  * self.cell_area, self.sub_catchment)
+            self.total_flow    = pcr.catchmenttotal(self.total_runoff * self.cell_area, self.ldd_network)
+            self.internal_flow = pcr.areatotal(self.total_runoff  * self.cell_area, self.sub_catchment)
             # - convert values to m3/s
             number_of_days_in_a_month = self.modelTime.day
-            self.total_inflow         = self.total_inflow    / (number_of_days_in_a_month * 24. * 3600.)
-            self.internal_inflow      = self.internal_inflow / (number_of_days_in_a_month * 24. * 3600.)
+            self.total_flow         = self.total_flow    / (number_of_days_in_a_month * 24. * 3600.)
+            self.internal_flow      = self.internal_flow / (number_of_days_in_a_month * 24. * 3600.)
             # - limit the values to the landmask only
-            self.total_inflow         = pcr.ifthen(self.landmask, self.total_inflow)
-            self.internal_inflow      = pcr.ifthen(self.landmask, self.internal_inflow)
+            self.total_flow         = pcr.ifthen(self.landmask, self.total_flow)
+            self.internal_flow      = pcr.ifthen(self.landmask, self.internal_flow)
             
             logger.info("Extrapolating or time %s", self.modelTime.currTime)
             # Purpose: To avoid missing value data while being extracted by cdo command
-            self.total_inflow         = pcr.cover(self.total_inflow,    pcr.windowmaximum(self.total_inflow,    0.125)) 
-            self.internal_inflow      = pcr.cover(self.internal_inflow, pcr.windowaverage(self.internal_inflow, 0.125)) 
+            self.total_flow         = pcr.cover(self.total_flow,    pcr.windowmaximum(self.total_flow,    0.125)) 
+            self.internal_flow      = pcr.cover(self.internal_flow, pcr.windowaverage(self.internal_flow, 0.125)) 
 
             # reporting 
             # - time stamp for reporting
@@ -145,13 +145,13 @@ class DeterministicRunner(DynamicModel):
                                           self.modelTime.day,\
                                           0)
             logger.info("Reporting for time %s", self.modelTime.currTime)
-            self.netcdf_report.data2NetCDF(self.total_inflow_output_file, \
-                                           "total_inflow", \
-                                           pcr.pcr2numpy(self.total_inflow, vos.MV), \
+            self.netcdf_report.data2NetCDF(self.total_flow_output_file, \
+                                           "total_flow", \
+                                           pcr.pcr2numpy(self.total_flow, vos.MV), \
                                            timeStamp)
-            self.netcdf_report.data2NetCDF(self.internal_inflow_output_file, \
-                                           "internal_inflow", \
-                                           pcr.pcr2numpy(self.internal_inflow, vos.MV), \
+            self.netcdf_report.data2NetCDF(self.internal_flow_output_file, \
+                                           "internal_flow", \
+                                           pcr.pcr2numpy(self.internal_flow, vos.MV), \
                                            timeStamp)
 
 
@@ -162,7 +162,7 @@ def main():
     output_folder = sys.argv[1]
 
     # totat_runoff_input_file
-    totat_runoff_input_file = "/scratch-shared/edwinvua/data_for_diede/inflow_scenarios/climatology_average_totalRunoff_monthTot_output_1979-2015.nc"
+    totat_runoff_input_file = "/scratch-shared/edwinvua/data_for_diede/flow_scenarios/climatology_average_totalRunoff_monthTot_output_1979-2015.nc"
     totat_runoff_input_file = sys.argv[2]
     
     # timeStep info: year, month, day, doy, hour, etc
