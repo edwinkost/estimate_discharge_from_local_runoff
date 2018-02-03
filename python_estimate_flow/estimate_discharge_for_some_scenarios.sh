@@ -20,3 +20,5 @@ python estimate_discharge_from_local_runoff.py /scratch-shared/edwinvua/data_for
 
 # full time series 1979-2015
 python estimate_discharge_from_local_runoff.py /scratch-shared/edwinvua/data_for_diede/netcdf_process/1979-2015/ /scratch-shared/edwinvua/data_for_diede/runoff_scenarios/totalRunoff_monthTot_output_1979-2015.nc 1979-01-31 2015-12-31 &
+
+wait
